@@ -16,6 +16,8 @@ Run order:
 
 from __future__ import annotations
 
+from utils.extended_visualizations import run_extended_visualizations
+
 from pathlib import Path
 
 import numpy as np
@@ -491,8 +493,10 @@ def main() -> None:
     write_plot_inventory(PLOTS_DIR, folders["debug"] / "plot_inventory.csv")
     print(f"Visualizations saved to: {PLOTS_DIR}")
     print(f"Summary saved to: {VIS_SUMMARY_DIR / 'visualization_report.md'}")
+    run_extended_visualizations()
     print("Finished 05_visualizations.py")
 
 
 if __name__ == "__main__":
     main()
+
