@@ -1,0 +1,34 @@
+dataset,column,description,source,notes
+stoic_daily_mood,date,Calendar date for Stoic mood/check-in records,Stoic,Used as daily merge key
+stoic_daily_mood,source_table,Imported Stoic table where the row came from,Stoic,Helpful because Stoic backup schemas can vary
+stoic_daily_wide,date,Calendar date for daily Stoic values,Stoic,Used as daily merge key
+stoic_daily_wide,stoic_*,Daily Stoic mood/check-in fields converted into wide format,Stoic,Exact columns depend on Stoic export contents
+stoic_answers_long,date,Calendar date for individual Stoic answer rows,Stoic,Long format is useful for checking original questions/answers
+stoic_answers_long,question,Question or prompt label when available,Stoic,May be inferred from exported column names
+stoic_answers_long,answer,Answer/value when available,Stoic,May include text or numeric responses
+apple_daily_sleep,date,Calendar date for sleep records,Apple Health,Used as daily merge key
+apple_daily_sleep,sleep_*,Daily sleep-related features,Apple Health,Usually based on HKCategoryTypeIdentifierSleepAnalysis
+apple_daily_activity,date,Calendar date for activity records,Apple Health,Used as daily merge key
+apple_daily_activity,activity_*,Daily movement/energy features such as steps distance active energy,Apple Health,Exact columns depend on available Apple Health records
+apple_daily_heart,date,Calendar date for heart records,Apple Health,Used as daily merge key
+apple_daily_heart,heart_*,Daily heart metrics such as heart rate resting heart rate and HRV,Apple Health,Aggregation may include mean min max count depending on script output
+apple_daily_body,date,Calendar date for body metrics,Apple Health,Used as daily merge key
+apple_daily_body,body_*,Daily body metrics such as weight when available,Apple Health,Only appears when Apple Health has matching records
+apple_daily_respiratory,date,Calendar date for respiratory records,Apple Health,Used as daily merge key
+apple_daily_respiratory,resp_*,Daily respiratory metrics such as respiratory rate and oxygen saturation,Apple Health,Only appears when Apple Health has matching records
+apple_daily_workouts,date,Calendar date for workouts,Apple Health,Used as daily merge key
+apple_daily_workouts,workout_*,Daily workout counts/durations/energy if available,Apple Health,Derived from Workout entries
+apple_activity_summary,date,Calendar date for Apple activity ring summary,Apple Health,Used as daily merge key
+apple_activity_summary,ring_*,Daily Apple activity summary fields,Apple Health,Derived from ActivitySummary entries
+master_daily,date,Calendar date for merged daily table,Merged,Primary merge key
+master_daily,stoic_*,Stoic-derived daily fields,Merged,Preserved in master file
+master_daily,sleep_*,Sleep-derived daily fields,Merged,Preserved in master file
+master_daily,activity_*,Activity-derived daily fields,Merged,Preserved in master file
+master_daily,heart_*,Heart-derived daily fields,Merged,Preserved in master file
+master_daily,body_*,Body-derived daily fields,Merged,Preserved in master file
+master_daily,resp_*,Respiratory-derived daily fields,Merged,Preserved in master file
+master_daily,workout_*,Workout-derived daily fields,Merged,Preserved in master file
+master_daily,ring_*,Apple activity summary fields,Merged,Preserved in master file
+correlation_ready_daily,date,Calendar date for numeric-only daily table,Merged,Primary merge key
+correlation_ready_daily,*,Numeric daily features only,Merged,Use for correlations and later analysis
+merge_inventory.json,*,Row counts column names and date ranges for merged inputs,Merged,Lightweight alternative to full import logs
