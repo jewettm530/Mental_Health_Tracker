@@ -1,32 +1,104 @@
-# Health Tracker
-A personal mental-health and health analytics project that combines Stoic mood-tracking data with Apple Health data.
+# Personal Health & Mood Analytics
 
-The project imports and cleans raw exports, creates daily datasets, analyzes meaningful patterns, generates question-focused visualizations, and displays the results in an interactive Streamlit dashboard.
+<p align="center">
+  <strong>A privacy-conscious Python pipeline for exploring relationships between self-tracking and Apple Health data</strong>
+</p>
 
-The goal is not to diagnose or predict mental-health conditions. It is to identify personal patterns involving mood, triggers, symptoms, automatic thoughts, recovery methods, sleep, activity, heart metrics, and relationship security.
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white">
+  <img src="https://img.shields.io/badge/Streamlit-FF4B4B?style=flat-square&logo=streamlit&logoColor=white">
+  <img src="https://img.shields.io/badge/Apple%20Health-EA4C89?style=flat-square&logo=apple&logoColor=white">
+  <img src="https://img.shields.io/badge/Privacy-Local%20Data-success?style=flat-square">
+</p>
 
-## Privacy
-This project contains highly sensitive personal health information.
-The following directories are excluded from Git:
-- `data/raw/`
-- `data/processed/`
-- `data/outputs/`
+## Overview
 
-Do not commit Apple Health exports, Stoic backups, processed health data, reports, or dashboard outputs to a public repository.
+This project is a **personal-informatics analytics pipeline** combining self-tracking data exported from Stoic with health and activity data exported from Apple Health.
 
-## Project folder structure
-Health_Tracker/
+The pipeline:
+
+* imports and cleans heterogeneous data exports;
+* creates standardized daily datasets;
+* integrates health and self-tracking variables;
+* explores statistical associations;
+* analyzes lagged and next-day relationships;
+* creates visualizations;
+* presents results in an interactive Streamlit dashboard.
+
+The project focuses on **longitudinal data engineering, exploratory analysis, visualization, and privacy-conscious software design**.
+
+---
+
+## Data Domains
+
+Depending on the available exports, the pipeline can analyze:
+
+### Self-Tracking
+
+* mood;
+* triggers;
+* symptoms;
+* automatic thoughts;
+* recovery strategies;
+* relationship-related measures.
+
+### Apple Health
+
+* sleep;
+* activity;
+* workouts;
+* heart-related measurements;
+* respiratory/body measurements;
+* other available wellness metrics.
+
+---
+
+## Analysis Features
+
+The pipeline can explore:
+
+* mood-factor differences;
+* sleep and mood relationships;
+* activity patterns;
+* recovery-method associations;
+* same-day correlations;
+* next-day and lagged relationships;
+* monthly consistency;
+* individualized baselines;
+* variables that may warrant additional tracking.
+
+Results include qualitative confidence labels so that visually strong patterns based on very small amounts of data are not presented as equally reliable.
+
+---
+
+## Pipeline
+
+```text
+Stoic Export ───────┐
+                    ▼
+Apple Health ──► Import & Clean
+                    │
+                    ▼
+                Daily Merge
+                    │
+        ┌───────────┼───────────┐
+        ▼           ▼           ▼
+    Analysis   Visualizations  Lagged Effects
+        └───────────┼───────────┘
+                    ▼
+             Streamlit Dashboard
+```
+
+---
+
+## Project Structure
+
+```text
+Mental_Health_Tracker/
 ├── data/
-│   ├── raw/
-│   │   ├── stoic.zip
-│   │   └── health.zip
-│   ├── processed/
-│   │   ├── stoic/
-│   │   ├── apple_health/
-│   │   └── merged/
-│   └── outputs/
-│       ├── analysis/
-│       └── plots/
+│   ├── raw/              # Private — ignored by Git
+│   ├── processed/        # Private — ignored by Git
+│   └── outputs/          # Private — ignored by Git
 │
 ├── scripts/
 │   ├── 01_import_data.py
@@ -36,143 +108,216 @@ Health_Tracker/
 │   ├── 05_visualizations.py
 │   ├── 06_dashboard.py
 │   └── utils/
-│       ├── analysis.py
-│       ├── apple_health.py
-│       ├── cleaning.py
-│       ├── dashboard.py
-│       ├── dashboard_style.py
-│       ├── date_utils.py
-│       ├── file_utils.py
-│       ├── merge.py
-│       ├── paths.py
-│       ├── plotting.py
-│       ├── reports.py
-│       └── stoic.py
 │
-├── README.md
 ├── data_dictionary.csv
 ├── requirements.txt
-└── .gitignore
+└── README.md
+```
 
-## Raw data files
+---
+
+## Quick Start
+
+Create the environment:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+Place local exports at:
+
+```text
 data/raw/stoic.zip
 data/raw/health.zip
-The scripts expect those exact filenames.
+```
 
-### Pipeline
-### 1. Import
-`01_import_data.py` reads:
-- `data/raw/stoic.zip`
-- `data/raw/health.zip`
+Run:
 
-It extracts and normalizes the source files into imported datasets.
-
-### 2. Process
-`02_process_data.py` converts the imported files into clean, separated daily datasets for:
-- Mood and relationship measures
-- Triggers
-- Symptoms
-- Automatic thoughts
-- Recovery methods
-- Sleep
-- Activity
-- Heart metrics
-- Respiratory and body metrics
-- Workouts
-
-### 3. Merge
-`03_merge_data.py` creates:
-- `master_daily.csv`
-- `correlation_ready_daily.csv`
-The master file preserves useful text and categorical fields. The correlation-ready file contains numeric analysis features.
-
-### 4. Analyze
-`04_analysis.py` produces:
-- Readable mood-factor comparisons
-- Best-day and worst-day associations
-- Sleep-range summaries
-- Recovery effectiveness
-- Lagged and next-day effects
-- Monthly consistency measures
-- Personalized baselines
-- Things-to-watch summaries
-
-### 5. Visualize
-`05_visualizations.py` generates question-focused plots organized by topic.
-
-### 6. Dashboard
-`06_dashboard.py` launches an interactive Streamlit dashboard with topic tabs, readable summaries, confidence ratings, and a two-variable association explorer.
-
-## Running the project
-From the project root:
-bash
+```bash
 python3 scripts/01_import_data.py
 python3 scripts/02_process_data.py
 python3 scripts/03_merge_data.py
 python3 scripts/04_analysis.py
 python3 scripts/05_visualizations.py
+```
+
+Launch the dashboard:
+
+```bash
 streamlit run scripts/06_dashboard.py
+```
 
-## Main merged datasets
-### `master_daily.csv`
-This is the full daily merged dataset. It keeps all available merged columns, including text or category-like fields when present.
+---
 
-Use this when you want the most complete daily view.
+## Privacy
 
-### `correlation_ready_daily.csv`
-This keeps only:
-- `date`
-- numeric columns
-- columns that contain at least one usable numeric value
-Use this later for correlation checks, lag analysis, and graphs.
+Health and journal exports can contain highly sensitive information.
 
-## Notes on import logs
-Full import logs are optional for now. The current setup already creates some lightweight inventory files, including:
-- data/processed/merged/merge_inventory.json
-- data/processed/merged/correlation_ready_daily_enriched.csv
-- data/processed/merged/correlation_ready_daily.csv
-- data/processed/merged/master_daily.csv
+The repository excludes:
 
-## Dashboard sections
-- Summary
-- Mood
-- Health
-- Sleep
-- Activity
-- Heart
-- Relationships
-- Triggers
-- Symptoms
-- Automatic Thoughts
-- Recovery
-- Predictions
-- Lagged Effects
-- Consistency
-- Personal Baselines
-- Things to Watch
-- Associations Explorer
+```text
+data/raw/
+data/processed/
+data/outputs/
+```
 
-## Confidence ratings
-Results are labeled according to the amount of supporting data.
-- Very low: only a few observations; treat as an early clue
-- Preliminary: a possible pattern that needs more data
-- Moderate: supported by a more useful sample
-- High: supported by a comparatively large number of observations
-A strong correlation based on very few days should not be treated as a reliable conclusion.
+Raw exports, processed personal datasets, journal content, and generated private reports should **never be committed publicly**.
 
-## Interpreting results
-- Average mood difference: the average lowest-mood score on days when a factor was present minus the average on days when it was absent.
-- Positive difference: the lowest mood was higher on days with the factor.
-- Negative difference: the lowest mood was lower on days with the factor.
-- Correlation: how strongly two numeric variables tend to move together.
-- Confidence interval: a range of plausible values for the estimated difference.
-- p-value: a statistical measure included for context; it should not be interpreted without considering sample size and effect size.
-- Standard deviation: the amount of variability in a measure. Lower monthly mood standard deviation means more stable mood scores.
+Any public screenshots or demonstrations should use synthetic or appropriately anonymized data.
 
-## Limitations
-- Results show associations, not causation.
-- Early findings may be based on very small samples.
-- Apple Health data may be missing when devices were not worn or measurements were unavailable.
-- Same-day associations do not establish which factor occurred first.
-- Binary variables indicate that a factor was recorded, not its intensity.
-- The project is for personal reflection and is not a diagnostic or medical tool.
+---
+
+## Interpretation & Limitations
+
+* Results describe associations, not causation.
+* Same-day relationships do not establish temporal direction.
+* Lagged relationships improve temporal interpretation but still do not prove causality.
+* Early findings may rely on small numbers of observations.
+* Missing wearable data may reflect device usage rather than physiological change.
+* Self-tracking data can contain reporting and selection biases.
+
+---
+
+## Responsible Use
+
+This project is intended for **personal informatics, longitudinal-data analysis, and software-development exploration**.
+
+It is not a diagnostic system or medical device and should not be used for automated medical decisions.
+
+---
+
+**Skills:** `Python` · `pandas` · `Streamlit` · `Longitudinal Data` · `Apple Health` · `Statistical Analysis` · `Data Visualization` · `Time-Series Analysis` · `Privacy-Conscious Data Engineering`
+
+---
+
+<details>
+<summary><h1>Technical Details</h1></summary>
+
+### Processing Stages
+
+#### 1. Import
+
+```text
+01_import_data.py
+```
+
+reads the Stoic and Apple Health archives and normalizes the source exports.
+
+#### 2. Process
+
+```text
+02_process_data.py
+```
+
+creates cleaned daily datasets for available domains such as:
+
+* mood and relationship measures;
+* triggers;
+* symptoms;
+* automatic thoughts;
+* recovery methods;
+* sleep;
+* activity;
+* heart metrics;
+* respiratory/body measures;
+* workouts.
+
+#### 3. Merge
+
+```text
+03_merge_data.py
+```
+
+creates the primary integrated datasets.
+
+### Main Datasets
+
+#### `master_daily.csv`
+
+The broadest daily merged dataset.
+
+It retains useful numeric, categorical, and text-like information where appropriate.
+
+#### `correlation_ready_daily.csv`
+
+A simplified numeric dataset intended for:
+
+* correlations;
+* lag analysis;
+* numeric visualizations;
+* exploratory associations.
+
+### Analysis
+
+```text
+04_analysis.py
+```
+
+supports outputs such as:
+
+* mood-factor comparisons;
+* best/worst-day associations;
+* sleep-range summaries;
+* recovery-method comparisons;
+* lagged relationships;
+* monthly consistency;
+* individualized baselines.
+
+### Visualization
+
+```text
+05_visualizations.py
+```
+
+generates question-focused plots organized by topic.
+
+### Dashboard
+
+```text
+06_dashboard.py
+```
+
+provides an interactive Streamlit interface with sections for areas such as:
+
+* mood;
+* sleep;
+* activity;
+* heart-related metrics;
+* triggers;
+* recovery;
+* lagged effects;
+* consistency;
+* personal baselines;
+* association exploration.
+
+### Confidence Labels
+
+Exploratory findings are labeled according to the amount of supporting data.
+
+Conceptually:
+
+* **Very low** — very few usable observations
+* **Preliminary** — possible pattern requiring more data
+* **Moderate** — more useful supporting sample
+* **High** — comparatively stronger observational support
+
+These labels help prevent a large effect or correlation based on only a few observations from being treated as a robust finding.
+
+### Statistical Interpretation
+
+Correlations and average differences are treated as exploratory associations.
+
+Interpretation should consider:
+
+* effect size;
+* number of observations;
+* confidence intervals;
+* missingness;
+* temporal ordering;
+* repeated testing.
+
+A statistically interesting association should not automatically be interpreted as practically meaningful or causal.
+
+</details>
