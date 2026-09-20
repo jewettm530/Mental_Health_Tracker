@@ -74,3 +74,4 @@ dist/
 .coverage
 htmlcov/
 .pytest_cache/config/context.json
+*/context.jsonconfig/context.json
