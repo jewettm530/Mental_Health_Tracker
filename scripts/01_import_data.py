@@ -1,7 +1,8 @@
 """01_import_data.py
 
-Reads the two raw zip files:
+Reads the raw exports:
 - data/raw/stoic.zip
+- data/raw/stoic.txt (optional but recommended)
 - data/raw/health.zip
 
 Outputs imported/raw-ish CSVs into:
@@ -10,8 +11,8 @@ Outputs imported/raw-ish CSVs into:
 """
 
 from utils.apple_health import import_apple_health_zip
-from utils.paths import APPLE_HEALTH_RAW, APPLE_IMPORTED_DIR, STOIC_IMPORTED_DIR, STOIC_RAW, ensure_project_folders
-from utils.stoic import import_stoic_zip
+from utils.paths import APPLE_HEALTH_RAW, APPLE_IMPORTED_DIR, STOIC_IMPORTED_DIR, STOIC_RAW, STOIC_TXT_RAW, ensure_project_folders
+from utils.stoic import import_stoic_txt, import_stoic_zip
 
 
 def main() -> None:
@@ -19,10 +20,12 @@ def main() -> None:
 
     print("=== 01 Import Data ===")
     print(f"Stoic zip: {STOIC_RAW}")
+    print(f"Stoic txt: {STOIC_TXT_RAW}")
     print(f"Apple Health zip: {APPLE_HEALTH_RAW}")
 
     import_stoic_zip(STOIC_RAW, STOIC_IMPORTED_DIR)
-    print("Stoic import complete.")
+    import_stoic_txt(STOIC_TXT_RAW, STOIC_IMPORTED_DIR)
+    print("Stoic ZIP/TXT import complete.")
 
     import_apple_health_zip(APPLE_HEALTH_RAW, APPLE_IMPORTED_DIR)
     print("Apple Health import complete.")

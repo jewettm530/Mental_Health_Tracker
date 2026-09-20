@@ -8,10 +8,15 @@ import pandas as pd
 
 from utils.date_utils import standardize_date
 from utils.file_utils import ensure_dir, save_csv, save_json
-from utils.paths import APPLE_CLEAN_DIR, MERGED_DIR, STOIC_CLEAN_DIR
+from utils.paths import APPLE_CLEAN_DIR, CONTEXT_CLEAN_DIR, MERGED_DIR, STOIC_CLEAN_DIR
 
 DESCRIPTIVE_SUFFIXES = ("_text", "_labels", "_label")
-DESCRIPTIVE_COLUMNS = {"symptoms_text", "triggers_text", "automatic_thoughts_text", "recovery_methods_text", "lowest_mood_duration_label", "symptom_labels", "trigger_labels", "recovery_labels"}
+DESCRIPTIVE_COLUMNS = {
+    "symptoms_text", "triggers_text", "automatic_thoughts_text", "recovery_methods_text",
+    "lowest_mood_duration_label", "symptom_labels", "trigger_labels", "recovery_labels",
+    "emotions_text", "influences_text", "main_focus_text", "daily_summary_text",
+    "daily_plan_text", "daily_goals_text", "routine_mood_label",
+}
 
 
 def _read_daily_file(path: Path, prefix: str | None = None) -> pd.DataFrame:
@@ -41,6 +46,10 @@ def load_clean_daily_datasets() -> dict[str, pd.DataFrame]:
         "apple_respiratory": (APPLE_CLEAN_DIR / "apple_daily_respiratory.csv", "resp"),
         "apple_workouts": (APPLE_CLEAN_DIR / "apple_daily_workouts.csv", "workout"),
         "apple_activity_summary": (APPLE_CLEAN_DIR / "apple_activity_summary.csv", "ring"),
+        # Passive environmental context and optional future screen-time data.
+        # These files already use explicit weather_/screen_time_ prefixes.
+        "weather_context": (CONTEXT_CLEAN_DIR / "weather_daily.csv", None),
+        "screen_time_context": (CONTEXT_CLEAN_DIR / "screen_time_daily.csv", None),
     }
     return {name: _read_daily_file(path, prefix) for name, (path, prefix) in files.items()}
 
@@ -63,12 +72,34 @@ def merge_daily_sources(datasets: dict[str, pd.DataFrame]) -> pd.DataFrame:
     return master
 
 
+
+def add_passive_context_derivatives(master: pd.DataFrame) -> pd.DataFrame:
+    """Add cross-source passive-context measures without inventing missing data.
+
+    Personal daylight exposure is Apple Watch Time in Daylight. Available
+    daylight is location-level sunrise-to-sunset duration from weather data.
+    Their ratio is useful as a behavioral context measure, but it is not a
+    biological sunlight-dose estimate.
+    """
+    out = master.copy()
+    personal = "activity_time_in_daylight_minutes"
+    available = "weather_daylight_hours"
+    if personal in out.columns and available in out.columns:
+        daylight_minutes = pd.to_numeric(out[personal], errors="coerce")
+        available_minutes = pd.to_numeric(out[available], errors="coerce") * 60.0
+        valid = daylight_minutes.notna() & available_minutes.notna() & (available_minutes > 0)
+        out["daylight_exposure_pct_of_available"] = pd.Series(pd.NA, index=out.index, dtype="Float64")
+        out.loc[valid, "daylight_exposure_pct_of_available"] = (
+            daylight_minutes.loc[valid] / available_minutes.loc[valid] * 100.0
+        )
+    return out
+
 def build_correlation_ready_dataset(master: pd.DataFrame) -> pd.DataFrame:
     """Keep date plus genuinely numeric columns only."""
     if master.empty:
         return pd.DataFrame(columns=["date"])
 
-    out = pd.DataFrame({"date": master["date"]})
+    columns: dict[str, pd.Series] = {"date": master["date"]}
     for col in master.columns:
         if col == "date" or col in DESCRIPTIVE_COLUMNS or col.endswith(DESCRIPTIVE_SUFFIXES):
             continue
@@ -80,14 +111,15 @@ def build_correlation_ready_dataset(master: pd.DataFrame) -> pd.DataFrame:
         converted = pd.to_numeric(master[col], errors="coerce")
         # Require at least two values and at least two unique values for correlation usefulness.
         if converted.notna().sum() >= 2 and converted.nunique(dropna=True) >= 2:
-            out[col] = converted
-    return out
+            columns[col] = converted
+    return pd.DataFrame(columns)
 
 
 def build_master_daily_dataset(output_dir: Path = MERGED_DIR) -> None:
     ensure_dir(output_dir)
     datasets = load_clean_daily_datasets()
     master = merge_daily_sources(datasets)
+    master = add_passive_context_derivatives(master)
     corr_ready = build_correlation_ready_dataset(master)
 
     save_csv(master, output_dir / "master_daily.csv")

@@ -56,6 +56,146 @@ MENTAL_HEALTH_TARGETS = [
     "relationship_security_score",
 ]
 
+LABEL_OVERRIDES = {
+    "lowest_mood_score": "Lowest Mood of Day (1–5)",
+    "lowest_mood_duration_score": "Low-Mood Duration (1–5)",
+    "relationship_security_score": "Relationship Security (1–5)",
+    "mood_checkin_mean_score": "Average Quick Mood Check-in (1–5)",
+    "mood_checkin_min_score": "Lowest Quick Mood Check-in (1–5)",
+    "mood_checkin_max_score": "Highest Quick Mood Check-in (1–5)",
+    "mood_checkin_last_score": "Last Quick Mood Check-in of Day (1–5)",
+    "mood_checkin_count": "Number of Quick Mood Check-ins",
+    "mood_checkin_sd_score": "Within-Day Quick Mood Variability",
+    "stress_score": "Stress (1–5)",
+    "energy_score": "Energy (1–5)",
+    "productivity_score": "Productivity (1–5)",
+    "connectedness_score": "Connection to Others (1–5)",
+    "subjective_sleep_score": "How Well I Slept (1–5)",
+    "motivation_score": "Motivation (1–5)",
+    "sleep_hours_asleep": "Hours Asleep",
+    "activity_steps": "Steps",
+    "activity_exercise_minutes": "Exercise Minutes",
+    "activity_walking_running_distance": "Walking/Running Distance",
+    "activity_active_energy": "Active Energy",
+    "heart_hrv_sdnn": "HRV (SDNN)",
+    "heart_resting_heart_rate": "Resting Heart Rate",
+    "activity_time_in_daylight_minutes": "Time in Daylight (Apple Watch)",
+    "daylight_exposure_pct_of_available": "Personal Daylight Exposure (% of Available Daylight)",
+    "weather_daylight_hours": "Available Daylight",
+    "weather_sunshine_hours": "Sunshine Duration",
+    "weather_sunshine_fraction_pct": "Sunny Share of Daylight",
+    "weather_cloud_cover_mean_pct": "Average Cloud Cover",
+    "weather_precipitation_mm": "Precipitation",
+    "weather_precipitation_hours": "Hours with Precipitation",
+    "weather_temperature_mean_f": "Average Temperature",
+    "weather_apparent_temperature_mean_f": "Average Feels-Like Temperature",
+    "weather_shortwave_radiation_mj_m2": "Solar Radiation",
+    "screen_time_total_minutes": "Total Screen Time",
+    "screen_time_late_night_minutes": "Late-Night Screen Time",
+    "screen_time_social_minutes": "Social Screen Time",
+    "screen_time_entertainment_minutes": "Entertainment Screen Time",
+    "screen_time_productivity_minutes": "Productivity Screen Time",
+    "screen_time_pickups": "Device Pickups",
+    "screen_time_notifications": "Notifications",
+}
+
+VARIABLE_DESCRIPTIONS = {
+    "lowest_mood_score": "Your rating for the lowest point your mood reached that day. Higher scores mean the lowest point was still better.",
+    "mood_checkin_mean_score": "Average of the quick Stoic mood check-ins recorded that day.",
+    "mood_checkin_min_score": "The lowest quick Stoic mood check-in recorded that day.",
+    "mood_checkin_max_score": "The highest quick Stoic mood check-in recorded that day.",
+    "mood_checkin_last_score": "The final quick Stoic mood check-in recorded that day.",
+    "mood_checkin_count": "How many quick Stoic mood check-ins were recorded that day.",
+    "mood_checkin_sd_score": "How spread out multiple quick mood check-ins were within the same day. Higher means more within-day fluctuation.",
+    "relationship_security_score": "How secure your important relationships felt that day; higher means more secure.",
+    "lowest_mood_duration_score": "How long the lowest-mood period lasted; higher scores mean a longer low period.",
+    "stress_score": "Your daily stress rating; higher means more stressed.",
+    "energy_score": "Your daily energy rating; higher means more energy.",
+    "subjective_sleep_score": "Your own rating of how well you slept, separate from Apple Health sleep duration.",
+    "sleep_hours_asleep": "Estimated hours asleep from Apple Health sleep records.",
+    "heart_hrv_sdnn": "Heart-rate variability measured as SDNN in milliseconds.",
+    "activity_time_in_daylight_minutes": "Minutes your Apple Watch recorded you as spending in daylight. This is personal exposure, unlike weather-based sunshine availability.",
+    "daylight_exposure_pct_of_available": "Your Apple Watch daylight minutes divided by the daylight minutes available at the configured location. This is a behavioral exposure ratio, not a biological sunlight dose.",
+    "weather_daylight_hours": "How many hours of daylight were available at the configured location that day. This does not mean you personally spent that long outside.",
+    "weather_sunshine_hours": "Estimated hours with direct sunshine at the configured location based on weather data.",
+    "weather_sunshine_fraction_pct": "The percentage of available daylight hours that were sunny according to weather data.",
+    "weather_cloud_cover_mean_pct": "Average cloud cover for the configured location that day.",
+    "weather_precipitation_mm": "Total daily precipitation at the configured location.",
+    "weather_shortwave_radiation_mj_m2": "Daily solar radiation reaching the surface; an environmental light-availability measure, not personal exposure.",
+    "screen_time_total_minutes": "Total daily screen time from an optional external screen-time source.",
+    "screen_time_late_night_minutes": "Screen time during the late-night window from an optional external source.",
+}
+
+VARIABLE_UNITS = {
+    "sleep_hours_asleep": "hours",
+    "activity_steps": "steps",
+    "activity_exercise_minutes": "minutes",
+    "activity_walking_running_distance": "miles",
+    "activity_active_energy": "kcal",
+    "heart_hrv_sdnn": "ms",
+    "heart_resting_heart_rate": "bpm",
+    "heart_rate": "bpm",
+    "lowest_mood_score": "points",
+    "relationship_security_score": "points",
+    "stress_score": "points",
+    "energy_score": "points",
+    "productivity_score": "points",
+    "connectedness_score": "points",
+    "activity_time_in_daylight_minutes": "minutes",
+    "daylight_exposure_pct_of_available": "%",
+    "weather_daylight_hours": "hours",
+    "weather_sunshine_hours": "hours",
+    "weather_sunshine_fraction_pct": "%",
+    "weather_cloud_cover_mean_pct": "%",
+    "weather_precipitation_mm": "mm",
+    "weather_precipitation_hours": "hours",
+    "weather_temperature_mean_f": "°F",
+    "weather_apparent_temperature_mean_f": "°F",
+    "weather_shortwave_radiation_mj_m2": "MJ/m²",
+    "screen_time_total_minutes": "minutes",
+    "screen_time_late_night_minutes": "minutes",
+    "screen_time_social_minutes": "minutes",
+    "screen_time_entertainment_minutes": "minutes",
+    "screen_time_productivity_minutes": "minutes",
+}
+
+GROUP_LABELS = {
+    "mood/relationship": "Mood & relationships",
+    "context": "Daily context",
+    "body/respiratory": "Body & breathing",
+    "heart": "Heart & HRV",
+    "activity": "Activity",
+    "sleep": "Sleep",
+    "trigger": "Triggers",
+    "symptom": "Symptoms",
+    "recovery": "Recovery",
+    "thought": "Automatic thoughts",
+    "count": "Counts",
+    "environment": "Weather & daylight",
+    "screen": "Screen time",
+    "other": "Other",
+}
+
+
+def variable_source(col: str) -> str:
+    """Return a readable provenance label for a dashboard variable."""
+    c = str(col).lower()
+    if col == "activity_time_in_daylight_minutes":
+        return "Apple Watch"
+    if col == "daylight_exposure_pct_of_available":
+        return "Derived: Apple Watch + local weather"
+    if c.startswith("weather_"):
+        return "Local weather history (Open-Meteo)"
+    if c.startswith("screen_time_"):
+        return "Optional external screen-time file"
+    if c.startswith(("trigger_", "symptom_", "recovery_", "automatic_thought_", "context_")):
+        return "Stoic"
+    if any(token in c for token in ["mood", "stress", "energy", "productivity", "connectedness", "motivation", "security", "subjective_sleep"]):
+        return "Stoic"
+    if c.startswith(("activity_", "heart_", "resp_", "body_", "ring_", "sleep_")) or c == "workout_count":
+        return "Apple Health export"
+    return "—"
+
 
 @dataclass
 class PairSummary:
@@ -101,6 +241,7 @@ def load_dashboard_data(merged_dir: Path, output_dir: Path, stoic_clean_dir: Pat
         "recovery_effectiveness": read_csv_if_exists(analysis_dir / "recovery" / "recovery_effectiveness.csv"),
         "sleep_quality": read_csv_if_exists(analysis_dir / "sleep" / "sleep_quality_ranges.csv"),
         "lagged_effects": read_csv_if_exists(analysis_dir / "lagged" / "next_day_effects.csv"),
+        "temporal_relationships": read_csv_if_exists(analysis_dir / "temporal" / "timing_relationships.csv"),
         "consistency": read_csv_if_exists(analysis_dir / "consistency" / "monthly_consistency.csv"),
         "personal_baselines": read_csv_if_exists(analysis_dir / "baselines" / "personal_baselines.csv"),
         "things_to_watch": read_csv_if_exists(analysis_dir / "things_to_watch" / "things_to_watch.csv"),
@@ -131,6 +272,10 @@ def pretty_label(name: str) -> str:
     """
     if not isinstance(name, str):
         return str(name)
+    if name in LABEL_OVERRIDES:
+        return LABEL_OVERRIDES[name]
+    if name.startswith("context_"):
+        return f"Daily Context: {name[len('context_'):].replace('_', ' ').title()}"
 
     cleaned = name.replace("HKQuantityTypeIdentifier", "").replace("HKCategoryTypeIdentifier", "")
     cleaned = cleaned.replace("_", " ").replace("-", " ")
@@ -200,10 +345,16 @@ def variable_group(col: str) -> str:
         return "recovery"
     if c.startswith("automatic_thought_"):
         return "thought"
+    if c.startswith("context_"):
+        return "context"
     if "mood" in c or "security" in c or "duration" in c:
         return "mood/relationship"
     if "sleep" in c or "asleep" in c or "awake" in c:
         return "sleep"
+    if c.startswith("weather_") or "daylight" in c:
+        return "environment"
+    if c.startswith("screen_time_"):
+        return "screen"
     if "heart" in c or "hrv" in c:
         return "heart"
     if any(word in c for word in ["step", "exercise", "distance", "energy", "flight", "stand", "workout"]):
@@ -216,6 +367,8 @@ def variable_group(col: str) -> str:
 def is_explorer_clutter_column(col: str) -> bool:
     """Hide low-value/internal columns from the variable explorer."""
     lowered = col.lower()
+    if lowered.startswith(("focus_", "influence_")):
+        return True
     return any(hint in lowered for hint in EXPLORER_EXCLUDE_HINTS)
 
 
@@ -235,7 +388,44 @@ def get_variable_options(df: pd.DataFrame, include_counts: bool = False) -> list
 
 
 def format_option(col: str) -> str:
-    return f"{pretty_label(col)}  [{variable_group(col)}]"
+    group = GROUP_LABELS.get(variable_group(col), variable_group(col).replace("_", " ").title())
+    source = variable_source(col)
+    if source != "—" and variable_group(col) in {"environment", "screen"}:
+        return f"{pretty_label(col)}  [{group} · {source}]"
+    return f"{pretty_label(col)}  [{group}]"
+
+
+def variable_description(col: str) -> str:
+    if col in VARIABLE_DESCRIPTIONS:
+        return VARIABLE_DESCRIPTIONS[col]
+    if col.startswith("context_"):
+        return "Whether this topic appeared in either your morning focus or evening influences for that day."
+    if col.startswith("trigger_"):
+        return "Whether this trigger was selected on that day. Skipped trigger questions stay missing rather than counting as no."
+    if col.startswith("symptom_"):
+        return "Whether this symptom was selected on that day. Skipped symptom questions stay missing rather than counting as no."
+    if col.startswith("recovery_"):
+        return "Whether this recovery method was selected on that day."
+    return "Daily value from the merged Stoic / Apple Health dataset."
+
+
+def variable_unit(col: str) -> str:
+    return VARIABLE_UNITS.get(col, "")
+
+
+def relationship_percent(r: float | None) -> str:
+    if r is None or pd.isna(r):
+        return "Not available"
+    return f"{float(r) * 100:+.0f}%"
+
+
+def relationship_strength(r: float | None) -> str:
+    if r is None or pd.isna(r):
+        return "Not enough data"
+    a = abs(float(r))
+    strength = "Very weak" if a < .1 else "Weak" if a < .3 else "Moderate" if a < .5 else "Strong" if a < .7 else "Very strong"
+    direction = "positive" if r > 0 else "negative" if r < 0 else "no"
+    return f"{strength} {direction}"
 
 
 def clean_pair_data(df: pd.DataFrame, x_col: str, y_col: str) -> pd.DataFrame:
@@ -332,9 +522,8 @@ def summarize_binary_vs_numeric(df: pd.DataFrame, binary_col: str, numeric_col: 
 
     table = pd.DataFrame(
         [
-            {"group": f"Days with {pretty_label(binary_col)}", "n_days": len(with_vals), f"average_{numeric_col}": with_vals.mean()},
-            {"group": f"Days without {pretty_label(binary_col)}", "n_days": len(without_vals), f"average_{numeric_col}": without_vals.mean()},
-            {"group": "Difference: with - without", "n_days": len(temp), f"average_{numeric_col}": diff},
+            {"Group": f"Days with {pretty_label(binary_col)}", "Days": len(with_vals), f"Average {pretty_label(numeric_col)}": round(with_vals.mean(), 2)},
+            {"Group": f"Days without {pretty_label(binary_col)}", "Days": len(without_vals), f"Average {pretty_label(numeric_col)}": round(without_vals.mean(), 2)},
         ]
     )
 
@@ -349,9 +538,9 @@ def summarize_binary_vs_numeric(df: pd.DataFrame, binary_col: str, numeric_col: 
         f"Difference = **{diff:+.2f}** {pretty_label(numeric_col)} points/units",
     ]
     if r is not None:
-        lines.append(f"Pearson r = **{r:.2f}**" + (f", p = **{p_corr:.4f}**" if p_corr is not None else ""))
+        lines.append(f"Relationship = **{relationship_percent(r)}** ({relationship_strength(r).lower()})")
     if p_ttest is not None:
-        lines.append(f"Welch t-test p-value = **{p_ttest:.4f}**")
+        lines.append(f"Statistical check p-value = **{p_ttest:.4f}**")
     if len(temp) < 10:
         lines.append("\nSmall sample note: treat this as a clue, not a conclusion yet.")
 
@@ -365,11 +554,11 @@ def summarize_numeric_vs_numeric(df: pd.DataFrame, x_col: str, y_col: str) -> Pa
     r, p = pearson_stats(temp[x_col], temp[y_col])
     table = pd.DataFrame(
         [
-            {"metric": "paired_days", "value": len(temp)},
-            {"metric": f"average_{x_col}", "value": temp[x_col].mean()},
-            {"metric": f"average_{y_col}", "value": temp[y_col].mean()},
-            {"metric": "pearson_r", "value": r},
-            {"metric": "p_value", "value": p},
+            {"Measure": "Paired days", "Value": str(len(temp))},
+            {"Measure": f"Average {pretty_label(x_col)}", "Value": f"{temp[x_col].mean():.2f}"},
+            {"Measure": f"Average {pretty_label(y_col)}", "Value": f"{temp[y_col].mean():.2f}"},
+            {"Measure": "Relationship", "Value": relationship_percent(r)},
+            {"Measure": "Relationship strength", "Value": relationship_strength(r)},
         ]
     )
     lines = [
@@ -377,7 +566,7 @@ def summarize_numeric_vs_numeric(df: pd.DataFrame, x_col: str, y_col: str) -> Pa
         f"Paired days = **{len(temp)}**",
     ]
     if r is not None:
-        lines.append(f"Pearson r = **{r:.2f}**" + (f", p = **{p:.4f}**" if p is not None else ""))
+        lines.append(f"Relationship = **{relationship_percent(r)}** ({relationship_strength(r).lower()})")
         if abs(r) < 0.2:
             lines.append("This is a weak linear relationship so far.")
         elif abs(r) < 0.5:
@@ -399,7 +588,7 @@ def summarize_binary_vs_binary(df: pd.DataFrame, col_a: str, col_b: str) -> Pair
         "This is a co-occurrence comparison between two yes/no factors.",
     ]
     if r is not None:
-        lines.append(f"Phi/Pearson correlation = **{r:.2f}**" + (f", p = **{p:.4f}**" if p is not None else ""))
+        lines.append(f"Relationship = **{relationship_percent(r)}** ({relationship_strength(r).lower()})")
     if variable_group(col_a) in {"trigger", "symptom", "thought", "recovery"} and variable_group(col_b) in {"trigger", "symptom", "thought", "recovery"}:
         lines.append("\nNote: this can show co-occurrence, but it is usually less actionable than comparing either factor against mood, sleep, activity, or relationship security.")
     return PairSummary("\n".join(lines), table, fig)
@@ -449,6 +638,7 @@ def describe_dataset(df: pd.DataFrame) -> pd.DataFrame:
                 "column": col,
                 "label": pretty_label(col),
                 "group": variable_group(col),
+                "data_source": variable_source(col),
                 "non_null": int(df[col].notna().sum()),
                 "unique": int(df[col].nunique(dropna=True)),
             }

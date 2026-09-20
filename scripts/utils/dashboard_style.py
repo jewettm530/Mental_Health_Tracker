@@ -232,6 +232,152 @@ hr {
     border-color: var(--ht-border);
 }
 
+
+/* ------------------------------------------------------------------
+   Keep the dashboard readable regardless of the user's OS/browser
+   dark-mode preference. The visual design is intentionally light.
+   ------------------------------------------------------------------ */
+html, body, [data-testid="stAppViewContainer"], .stApp {
+    color-scheme: light !important;
+    color: var(--ht-text) !important;
+}
+
+[data-testid="stAppViewContainer"] > .main,
+[data-testid="stMain"],
+[data-testid="stMainBlockContainer"] {
+    color: var(--ht-text) !important;
+}
+
+/* Normal Streamlit text */
+[data-testid="stMarkdownContainer"],
+[data-testid="stMarkdownContainer"] p,
+[data-testid="stMarkdownContainer"] li,
+[data-testid="stMarkdownContainer"] strong,
+[data-testid="stMarkdownContainer"] em,
+[data-testid="stText"],
+[data-testid="stCaptionContainer"],
+[data-testid="stCaptionContainer"] p,
+[data-testid="stWidgetLabel"],
+[data-testid="stWidgetLabel"] p,
+[data-testid="stMetricValue"],
+[data-testid="stMetricDelta"],
+[data-testid="stExpander"] summary,
+[data-testid="stExpander"] summary p {
+    color: var(--ht-text) !important;
+}
+
+[data-testid="stCaptionContainer"],
+[data-testid="stCaptionContainer"] p,
+[data-testid="stMetricLabel"],
+[data-testid="stMetricLabel"] p {
+    color: var(--ht-muted) !important;
+}
+
+/* Our custom HTML blocks should never inherit white/dark-theme text. */
+.ht-hero,
+.ht-card,
+.ht-insight-card,
+.ht-watch-card,
+.ht-section,
+.ht-section-title,
+.ht-watch-card h3,
+.ht-watch-card div {
+    color: var(--ht-text) !important;
+}
+
+.ht-muted,
+.ht-section-subtitle,
+.ht-hero p {
+    color: var(--ht-muted) !important;
+}
+
+/* Sidebar text */
+[data-testid="stSidebar"],
+[data-testid="stSidebar"] [data-testid="stMarkdownContainer"],
+[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p,
+[data-testid="stSidebar"] [data-testid="stCaptionContainer"],
+[data-testid="stSidebar"] [data-testid="stWidgetLabel"] p,
+[data-testid="stSidebar"] summary,
+[data-testid="stSidebar"] summary p {
+    color: var(--ht-text) !important;
+}
+
+/* Inputs/selects. BaseWeb may otherwise inherit dark-theme foregrounds. */
+[data-baseweb="select"] > div,
+[data-baseweb="input"] > div,
+[data-baseweb="base-input"],
+[data-baseweb="textarea"] > div,
+.stTextInput input,
+.stNumberInput input,
+.stTextArea textarea {
+    background: #ffffff !important;
+    color: var(--ht-text) !important;
+}
+
+[data-baseweb="select"] span,
+[data-baseweb="select"] input,
+[data-baseweb="input"] input,
+[data-baseweb="textarea"] textarea {
+    color: var(--ht-text) !important;
+    -webkit-text-fill-color: var(--ht-text) !important;
+}
+
+/* Dropdown menus render in a portal outside the main app container. */
+[data-baseweb="popover"],
+[data-baseweb="menu"],
+[role="listbox"],
+[role="option"] {
+    background: #ffffff !important;
+    color: var(--ht-text) !important;
+}
+
+[role="option"] * {
+    color: var(--ht-text) !important;
+}
+
+/* Tabs and expanders */
+[data-testid="stTabs"] button[role="tab"],
+[data-testid="stTabs"] button[role="tab"] p {
+    color: #52625c !important;
+}
+
+[data-testid="stTabs"] button[role="tab"][aria-selected="true"],
+[data-testid="stTabs"] button[role="tab"][aria-selected="true"] p {
+    color: var(--ht-accent) !important;
+}
+
+[data-testid="stExpander"] details,
+[data-testid="stExpander"] summary {
+    background: transparent !important;
+    color: var(--ht-text) !important;
+}
+
+/* Alerts */
+[data-testid="stAlert"] p,
+[data-testid="stAlert"] div {
+    color: var(--ht-text) !important;
+}
+
+/* Buttons */
+.stButton > button,
+.stButton > button p,
+[data-testid="stBaseButton-secondary"],
+[data-testid="stBaseButton-secondary"] p {
+    color: var(--ht-accent) !important;
+}
+
+/* Dataframes use Streamlit's theme for the grid itself. This surrounding
+   rule keeps any fallback/table text legible too. */
+[data-testid="stDataFrame"],
+[data-testid="stDataFrame"] * {
+    color-scheme: light !important;
+}
+
+/* Links */
+a, [data-testid="stMarkdownContainer"] a {
+    color: #2f6757 !important;
+}
+
 @media (max-width: 800px) {
     .block-container { padding-left: 1rem; padding-right: 1rem; }
     .ht-hero { padding: 1.15rem; }
@@ -268,18 +414,40 @@ def section_header(title: str, subtitle: str | None = None) -> None:
 def confidence_badge(confidence: str) -> str:
     raw = str(confidence or "Unknown")
     css_key = raw.strip().lower().replace(" ", "-")
-    return f'<span class="ht-badge ht-badge-{html.escape(css_key)}">{html.escape(raw)} confidence</span>'
+    return f'<span class="ht-badge ht-badge-{html.escape(css_key)}">{html.escape(raw)} data support</span>'
 
 
-def render_watch_card(headline: str, message: str, category: str, confidence: str) -> None:
-    st.markdown(
-        f"""
-        <div class="ht-watch-card">
-            <h3>{html.escape(str(headline))}</h3>
-            <div>{html.escape(str(message))}</div>
-            <div style="margin-top:0.7rem;">{confidence_badge(confidence)}
-            <span class="ht-muted" style="margin-left:0.45rem;">{html.escape(str(category))}</span></div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+def render_watch_card(
+    headline: str,
+    message: str,
+    category: str,
+    confidence: str,
+    relationship_percent: float | None = None,
+    source: str | None = None,
+) -> None:
+    """Render a watch item using native Streamlit components.
+
+    This intentionally avoids raw HTML for dynamic text. Multiline raw-HTML
+    blocks can occasionally be split by Streamlit's Markdown parser, which
+    causes closing ``<span>``/``</div>`` fragments to appear as visible text.
+    """
+    details = [f"{str(confidence or 'Unknown')} data support"]
+
+    if relationship_percent is not None:
+        try:
+            value = float(relationship_percent)
+            if value == value:  # NaN-safe check
+                details.append(f"Relationship strength: {abs(value):.0f}%")
+        except (TypeError, ValueError):
+            pass
+
+    if category:
+        details.append(str(category))
+
+    if source and str(source).strip() not in {"", "—", "nan", "None"}:
+        details.append(f"Source: {str(source)}")
+
+    with st.container(border=True):
+        st.markdown(f"### {str(headline)}")
+        st.write(str(message))
+        st.caption(" · ".join(details))

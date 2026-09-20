@@ -64,8 +64,14 @@ PRIMARY_MOOD_TARGET = "lowest_mood_score"
 
 MOOD_TARGETS = [
     "lowest_mood_score",
+    "mood_checkin_mean_score",
     "relationship_security_score",
     "lowest_mood_duration_score",
+    "stress_score",
+    "energy_score",
+    "productivity_score",
+    "connectedness_score",
+    "motivation_score",
 ]
 
 COUNT_COLUMNS = {
@@ -102,8 +108,13 @@ PREFERRED_HEALTH_FEATURES = [
 
 PREFERRED_GROUP_OUTCOMES = [
     "lowest_mood_score",
+    "mood_checkin_mean_score",
     "relationship_security_score",
     "lowest_mood_duration_score",
+    "stress_score",
+    "energy_score",
+    "productivity_score",
+    "connectedness_score",
     "sleep_hours_asleep",
     "activity_steps",
     "activity_exercise_minutes",
@@ -124,6 +135,9 @@ DEFAULT_REPORT_EXCLUDE_FEATURES = {
 DEFAULT_REPORT_EXCLUDE_PREFIXES = (
     "low_hrv_",
     "high_hrv_",
+    # These duplicate the combined context_* features used by the dashboard.
+    "focus_",
+    "influence_",
 )
 
 
@@ -149,6 +163,8 @@ def normalize_name(name: str) -> str:
 
 
 def pretty_label(col: str) -> str:
+    if str(col).startswith("context_"):
+        return "Daily Context: " + str(col)[len("context_"):].replace("_", " ").strip().title()
     text = str(col).replace("_", " ").strip().title()
     replacements = {
         "Hrv": "HRV",
@@ -197,6 +213,14 @@ def feature_group(col: str) -> str:
         return "symptom"
     if name.startswith("recovery_"):
         return "recovery"
+    if name.startswith("emotion_"):
+        return "emotion"
+    if name.startswith("context_"):
+        return "context"
+    if name.startswith("influence_"):
+        return "influence"
+    if name.startswith("focus_"):
+        return "focus"
     if name.startswith("automatic_thought_") or name.startswith("thought_"):
         return "thought"
     if name in COUNT_COLUMNS or name.endswith("_count"):
@@ -358,7 +382,7 @@ def allowed_correlation_pair(a: str, b: str, allow_mood_binary: bool = True) -> 
     if is_sleep_stage_col(a) or is_sleep_stage_col(b):
         return False
 
-    binary_like = {"trigger", "symptom", "thought", "recovery"}
+    binary_like = {"trigger", "symptom", "thought", "recovery", "context"}
 
     # Do not correlate trigger/symptom/thought/recovery with each other.
     # That mostly creates co-occurrence noise rather than mood insight.
@@ -552,10 +576,13 @@ def _add_quantile_flag(df: pd.DataFrame, source_col: str, flag_col: str, quantil
     if len(valid) < 10 or valid.nunique() < 2:
         return
     cutoff = valid.quantile(quantile)
+    flag = pd.Series(pd.NA, index=df.index, dtype="Int64")
+    valid_mask = s.notna()
     if direction == "high":
-        df[flag_col] = (s >= cutoff).astype("Int64")
+        flag.loc[valid_mask] = (s.loc[valid_mask] >= cutoff).astype("Int64")
     else:
-        df[flag_col] = (s <= cutoff).astype("Int64")
+        flag.loc[valid_mask] = (s.loc[valid_mask] <= cutoff).astype("Int64")
+    df[flag_col] = flag
 
 
 def create_threshold_features(df: pd.DataFrame) -> pd.DataFrame:
@@ -563,10 +590,14 @@ def create_threshold_features(df: pd.DataFrame) -> pd.DataFrame:
 
     if "activity_exercise_minutes" in out.columns:
         s = pd.to_numeric(out["activity_exercise_minutes"], errors="coerce")
-        out["exercised_day"] = (s > 0).astype("Int64")
+        flag = pd.Series(pd.NA, index=out.index, dtype="Int64")
+        flag.loc[s.notna()] = (s.loc[s.notna()] > 0).astype("Int64")
+        out["exercised_day"] = flag
     if "workout_count" in out.columns:
         s = pd.to_numeric(out["workout_count"], errors="coerce")
-        out["workout_day"] = (s > 0).astype("Int64")
+        flag = pd.Series(pd.NA, index=out.index, dtype="Int64")
+        flag.loc[s.notna()] = (s.loc[s.notna()] > 0).astype("Int64")
+        out["workout_day"] = flag
 
     # Interpretable high/low health/activity flags.
     _add_quantile_flag(out, "activity_steps", "high_steps_day", 0.75, "high")

@@ -16,6 +16,7 @@ Outputs include:
 """
 
 from utils.apple_health import process_apple_health
+from utils.context_data import process_context_sources
 from utils.paths import APPLE_CLEAN_DIR, APPLE_IMPORTED_DIR, STOIC_CLEAN_DIR, STOIC_IMPORTED_DIR, ensure_project_folders
 from utils.stoic import process_stoic
 
@@ -30,6 +31,11 @@ def main() -> None:
 
     process_apple_health(APPLE_IMPORTED_DIR, APPLE_CLEAN_DIR)
     print("Apple Health processing complete.")
+
+    context = process_context_sources()
+    weather_rows = len(context.get("weather", []))
+    screen_rows = len(context.get("screen_time", []))
+    print(f"Context processing complete (weather rows={weather_rows}, screen-time rows={screen_rows}).")
 
     print("Finished 02_process_data.py")
 

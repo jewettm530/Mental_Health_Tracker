@@ -1,104 +1,33 @@
-# Personal Health & Mood Analytics
+# Health Tracker
+A personal mental-health and health analytics project that combines Stoic mood-tracking data with Apple Health data.
 
-<p align="center">
-  <strong>A privacy-conscious Python pipeline for exploring relationships between self-tracking and Apple Health data</strong>
-</p>
+The project imports and cleans raw exports, creates daily datasets, analyzes meaningful patterns, generates question-focused visualizations, and displays the results in an interactive Streamlit dashboard.
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white">
-  <img src="https://img.shields.io/badge/Streamlit-FF4B4B?style=flat-square&logo=streamlit&logoColor=white">
-  <img src="https://img.shields.io/badge/Apple%20Health-EA4C89?style=flat-square&logo=apple&logoColor=white">
-  <img src="https://img.shields.io/badge/Privacy-Local%20Data-success?style=flat-square">
-</p>
+The goal is not to diagnose or predict mental-health conditions. It is to identify personal patterns involving mood, triggers, symptoms, automatic thoughts, recovery methods, sleep, activity, heart metrics, and relationship security.
 
-## Overview
+## Privacy
+This project contains highly sensitive personal health information.
+The following directories are excluded from Git:
+- `data/raw/`
+- `data/processed/`
+- `data/outputs/`
 
-This project is a **personal-informatics analytics pipeline** combining self-tracking data exported from Stoic with health and activity data exported from Apple Health.
+Do not commit Apple Health exports, Stoic backups, processed health data, reports, or dashboard outputs to a public repository.
 
-The pipeline:
-
-* imports and cleans heterogeneous data exports;
-* creates standardized daily datasets;
-* integrates health and self-tracking variables;
-* explores statistical associations;
-* analyzes lagged and next-day relationships;
-* creates visualizations;
-* presents results in an interactive Streamlit dashboard.
-
-The project focuses on **longitudinal data engineering, exploratory analysis, visualization, and privacy-conscious software design**.
-
----
-
-## Data Domains
-
-Depending on the available exports, the pipeline can analyze:
-
-### Self-Tracking
-
-* mood;
-* triggers;
-* symptoms;
-* automatic thoughts;
-* recovery strategies;
-* relationship-related measures.
-
-### Apple Health
-
-* sleep;
-* activity;
-* workouts;
-* heart-related measurements;
-* respiratory/body measurements;
-* other available wellness metrics.
-
----
-
-## Analysis Features
-
-The pipeline can explore:
-
-* mood-factor differences;
-* sleep and mood relationships;
-* activity patterns;
-* recovery-method associations;
-* same-day correlations;
-* next-day and lagged relationships;
-* monthly consistency;
-* individualized baselines;
-* variables that may warrant additional tracking.
-
-Results include qualitative confidence labels so that visually strong patterns based on very small amounts of data are not presented as equally reliable.
-
----
-
-## Pipeline
-
-```text
-Stoic Export ───────┐
-                    ▼
-Apple Health ──► Import & Clean
-                    │
-                    ▼
-                Daily Merge
-                    │
-        ┌───────────┼───────────┐
-        ▼           ▼           ▼
-    Analysis   Visualizations  Lagged Effects
-        └───────────┼───────────┘
-                    ▼
-             Streamlit Dashboard
-```
-
----
-
-## Project Structure
-
-```text
-Mental_Health_Tracker/
+## Project folder structure
+Health_Tracker/
 ├── data/
-│   ├── raw/              # Private — ignored by Git
-│   ├── processed/        # Private — ignored by Git
-│   └── outputs/          # Private — ignored by Git
+│   ├── raw/
+│   │   ├── stoic.zip
+│   │   ├── stoic.txt
+│   │   └── health.zip
+│   ├── processed/
+│   │   ├── stoic/
+│   │   ├── apple_health/
+│   │   └── merged/
+│   └── outputs/
+│       ├── analysis/
+│       └── plots/
 │
 ├── scripts/
 │   ├── 01_import_data.py
@@ -108,216 +37,199 @@ Mental_Health_Tracker/
 │   ├── 05_visualizations.py
 │   ├── 06_dashboard.py
 │   └── utils/
+│       ├── analysis.py
+│       ├── apple_health.py
+│       ├── cleaning.py
+│       ├── dashboard.py
+│       ├── dashboard_style.py
+│       ├── date_utils.py
+│       ├── file_utils.py
+│       ├── merge.py
+│       ├── paths.py
+│       ├── plotting.py
+│       ├── reports.py
+│       └── stoic.py
 │
+├── README.md
 ├── data_dictionary.csv
 ├── requirements.txt
-└── README.md
-```
+└── .gitignore
 
----
-
-## Quick Start
-
-Create the environment:
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
-
-Place local exports at:
-
-```text
+## Raw data files
 data/raw/stoic.zip
+data/raw/stoic.txt
 data/raw/health.zip
-```
 
-Run:
+`stoic.zip` and `health.zip` are required. `stoic.txt` is strongly recommended: it adds human-readable Stoic question/choice labels, displayed 1–5 ratings, and can contain newer entries than the ZIP. The pipeline still runs without it for backward compatibility.
 
-```bash
+### Pipeline
+### 1. Import
+`01_import_data.py` reads:
+- `data/raw/stoic.zip`
+- `data/raw/stoic.txt` (when available)
+- `data/raw/health.zip`
+
+The Stoic ZIP remains the structured source for UUIDs, timestamps, contexts, and repeated check-ins. The TXT export is parsed as a complementary human-readable source and is used to decode labels and displayed ratings without double-counting overlapping observations.
+
+### 2. Process
+`02_process_data.py` converts the imported files into clean, separated daily datasets for:
+- Mood and relationship measures
+- Energy, stress, productivity, connectedness, motivation, and subjective sleep ratings
+- Repeated quick mood check-ins from the structured ZIP
+- Daily emotion and influence selections
+- Triggers
+- Symptoms
+- Automatic thoughts
+- Recovery methods
+- Sleep
+- Activity
+- Heart metrics
+- Respiratory and body metrics
+- Workouts
+
+### 3. Merge
+`03_merge_data.py` creates:
+- `master_daily.csv`
+- `correlation_ready_daily.csv`
+The master file preserves useful text and categorical fields. The correlation-ready file contains numeric analysis features.
+
+### 4. Analyze
+`04_analysis.py` produces:
+- Readable mood-factor comparisons
+- Best-day and worst-day associations
+- Sleep-range summaries
+- Recovery effectiveness
+- Timing-aware relationships: before mood, same-day, and after mood
+- Monthly consistency measures
+- Personalized baselines
+- Things-to-watch summaries
+
+### 5. Visualize
+`05_visualizations.py` generates question-focused plots organized by topic.
+
+### 6. Dashboard
+`06_dashboard.py` launches an interactive Streamlit dashboard with topic tabs, readable summaries, confidence ratings, and a two-variable association explorer.
+
+## Running the project
+From the project root:
+bash
 python3 scripts/01_import_data.py
 python3 scripts/02_process_data.py
 python3 scripts/03_merge_data.py
 python3 scripts/04_analysis.py
 python3 scripts/05_visualizations.py
-```
-
-Launch the dashboard:
-
-```bash
 streamlit run scripts/06_dashboard.py
+
+## Main merged datasets
+### `master_daily.csv`
+This is the full daily merged dataset. It keeps all available merged columns, including text or category-like fields when present.
+
+Use this when you want the most complete daily view.
+
+### `correlation_ready_daily.csv`
+This keeps only:
+- `date`
+- numeric columns
+- columns that contain at least one usable numeric value
+Use this later for correlation checks, lag analysis, and graphs.
+
+## Notes on import logs
+Full import logs are optional for now. The current setup already creates some lightweight inventory files, including:
+- data/processed/merged/merge_inventory.json
+- data/processed/merged/correlation_ready_daily_enriched.csv
+- data/processed/merged/correlation_ready_daily.csv
+- data/processed/merged/master_daily.csv
+
+## Dashboard sections
+- Overview
+- Summary
+- Best & Worst Days
+- Mood & Relationships
+- Health
+- Activity
+- Triggers & Thoughts
+- Recovery
+- Timing & Direction
+- Consistency
+- Personal Baselines
+- Things to Watch
+- Associations Explorer
+- Data Inventory
+
+## Confidence ratings
+Results are labeled according to the amount of supporting data.
+- Very low: only a few observations; treat as an early clue
+- Preliminary: a possible pattern that needs more data
+- Moderate: supported by a more useful sample
+- High: supported by a comparatively large number of observations
+A strong correlation based on very few days should not be treated as a reliable conclusion.
+
+## Interpreting results
+- Average mood difference: the average lowest-mood score on days when a factor was present minus the average on days when it was absent.
+- Positive difference: the lowest mood was higher on days with the factor.
+- Negative difference: the lowest mood was lower on days with the factor.
+- Correlation: how strongly two numeric variables tend to move together.
+- Confidence interval: a range of plausible values for the estimated difference.
+- p-value: a statistical measure included for context; it should not be interpreted without considering sample size and effect size.
+- Standard deviation: the amount of variability in a measure. Lower monthly mood standard deviation means more stable mood scores.
+
+## Limitations
+- Results show associations, not causation.
+- Early findings may be based on very small samples.
+- Apple Health data may be missing when devices were not worn or measurements were unavailable.
+- Same-day associations do not establish which factor occurred first.
+- Binary variables indicate that a factor was recorded, not its intensity.
+- A skipped Stoic multi-select question is stored as NULL, not 0. A 0 means the question was answered and that specific option was not selected. This prevents missing answers from being treated as evidence that a symptom, trigger, or recovery method was absent.
+- Derived Apple Health flags also remain NULL when the underlying metric is unavailable.
+- Stoic 1–5 ratings use the displayed app scale. Structured ZIP slider fallbacks are converted from the internal 0–4 representation to 1–5.
+- The project is for personal reflection and is not a diagnostic or medical tool.
+## Passive context: weather, daylight, and screen time
+
+The project can now add optional passive context without making the Stoic journal longer.
+
+### Weather/daylight opportunity
+
+Copy `config/context.example.json` to `config/context.json` and set either:
+
+```json
+{
+  "location_name": "CITY, STATE/REGION, COUNTRY",
+  "timezone": "auto"
+}
 ```
 
----
+or explicit latitude/longitude. When `scripts/02_process_data.py` runs, it fetches daily historical context from Open-Meteo for the dates already present in the project. The resulting variables include available daylight, sunshine duration, sunny share of daylight, average cloud cover, precipitation, temperature, and solar radiation.
 
-## Privacy
+These are **environmental opportunity** measures. They do not prove how long you personally spent outside.
 
-Health and journal exports can contain highly sensitive information.
+### Personal daylight exposure
 
-The repository excludes:
+The Apple Health importer is verified to read `HKQuantityTypeIdentifierTimeInDaylight` from this project's Apple Watch export (10,598 records across 691 recorded days in the supplied export). It becomes `activity_time_in_daylight_minutes` after the daily merge. When weather context is configured, the project also derives `daylight_exposure_pct_of_available` (personal daylight minutes ÷ available daylight minutes × 100). Personal exposure remains separate from weather-based sunshine/daylight because they answer different questions.
 
-```text
-data/raw/
-data/processed/
-data/outputs/
-```
+### Screen time
 
-Raw exports, processed personal datasets, journal content, and generated private reports should **never be committed publicly**.
+Apple's built-in Screen Time history is not directly available to this Python project. The project is ready for a future external source: if `data/raw/screen_time_daily.csv` exists, `02_process_data.py` will normalize and merge recognized daily fields such as total minutes, late-night minutes, category minutes, pickups, and notifications.
 
-Any public screenshots or demonstrations should use synthetic or appropriately anonymized data.
+### Timing & Direction analysis
 
----
+The former Next-Day Patterns page is now **Timing & Direction** and separates relationships into:
 
-## Interpretation & Limitations
+1. **Before mood / potential influences** — previous night's sleep plus previous-day measures vs today's mood.
+2. **Same-day / current** — variables that occur on the same calendar day as mood; useful for association, but temporal direction is unknown.
+3. **After mood / possible consequences** — today's mood vs the following day's measurements.
 
-* Results describe associations, not causation.
-* Same-day relationships do not establish temporal direction.
-* Lagged relationships improve temporal interpretation but still do not prove causality.
-* Early findings may rely on small numbers of observations.
-* Missing wearable data may reflect device usage rather than physiological change.
-* Self-tracking data can contain reporting and selection biases.
+These remain correlations, not causal conclusions. The separation is meant to stop a same-day association from being described as though it necessarily caused the mood change.
 
----
+### Sleep date alignment
 
-## Responsible Use
+Overnight Apple Health sleep is now assigned to the **wake date** (the date the sleep period ends). This makes the intended relationship `previous night's sleep -> today's mood` line up correctly.
 
-This project is intended for **personal informatics, longitudinal-data analysis, and software-development exploration**.
 
-It is not a diagnostic system or medical device and should not be used for automated medical decisions.
+### Passive-data provenance
 
----
+Weather/daylight variables now show a **Data source** label in the dashboard:
+- **Apple Watch** for personal Time in Daylight.
+- **Local weather history (Open-Meteo)** for environmental conditions.
+- **Derived: Apple Watch + local weather** for Personal Daylight Exposure %.
 
-**Skills:** `Python` · `pandas` · `Streamlit` · `Longitudinal Data` · `Apple Health` · `Statistical Analysis` · `Data Visualization` · `Time-Series Analysis` · `Privacy-Conscious Data Engineering`
-
----
-
-<details>
-<summary><h1>Technical Details</h1></summary>
-
-### Processing Stages
-
-#### 1. Import
-
-```text
-01_import_data.py
-```
-
-reads the Stoic and Apple Health archives and normalizes the source exports.
-
-#### 2. Process
-
-```text
-02_process_data.py
-```
-
-creates cleaned daily datasets for available domains such as:
-
-* mood and relationship measures;
-* triggers;
-* symptoms;
-* automatic thoughts;
-* recovery methods;
-* sleep;
-* activity;
-* heart metrics;
-* respiratory/body measures;
-* workouts.
-
-#### 3. Merge
-
-```text
-03_merge_data.py
-```
-
-creates the primary integrated datasets.
-
-### Main Datasets
-
-#### `master_daily.csv`
-
-The broadest daily merged dataset.
-
-It retains useful numeric, categorical, and text-like information where appropriate.
-
-#### `correlation_ready_daily.csv`
-
-A simplified numeric dataset intended for:
-
-* correlations;
-* lag analysis;
-* numeric visualizations;
-* exploratory associations.
-
-### Analysis
-
-```text
-04_analysis.py
-```
-
-supports outputs such as:
-
-* mood-factor comparisons;
-* best/worst-day associations;
-* sleep-range summaries;
-* recovery-method comparisons;
-* lagged relationships;
-* monthly consistency;
-* individualized baselines.
-
-### Visualization
-
-```text
-05_visualizations.py
-```
-
-generates question-focused plots organized by topic.
-
-### Dashboard
-
-```text
-06_dashboard.py
-```
-
-provides an interactive Streamlit interface with sections for areas such as:
-
-* mood;
-* sleep;
-* activity;
-* heart-related metrics;
-* triggers;
-* recovery;
-* lagged effects;
-* consistency;
-* personal baselines;
-* association exploration.
-
-### Confidence Labels
-
-Exploratory findings are labeled according to the amount of supporting data.
-
-Conceptually:
-
-* **Very low** — very few usable observations
-* **Preliminary** — possible pattern requiring more data
-* **Moderate** — more useful supporting sample
-* **High** — comparatively stronger observational support
-
-These labels help prevent a large effect or correlation based on only a few observations from being treated as a robust finding.
-
-### Statistical Interpretation
-
-Correlations and average differences are treated as exploratory associations.
-
-Interpretation should consider:
-
-* effect size;
-* number of observations;
-* confidence intervals;
-* missingness;
-* temporal ordering;
-* repeated testing.
-
-A statistically interesting association should not automatically be interpreted as practically meaningful or causal.
-
-</details>
+See `WEATHER_DATA_SOURCE_UPDATE.md` for details.

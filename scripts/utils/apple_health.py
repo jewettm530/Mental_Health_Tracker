@@ -29,6 +29,8 @@ KEEP_TYPES = {
     "HKQuantityTypeIdentifierBodyMass",
     "HKQuantityTypeIdentifierRespiratoryRate",
     "HKQuantityTypeIdentifierOxygenSaturation",
+    # Verified in this project's Apple Health export; Apple Watch records values in minutes.
+    "HKQuantityTypeIdentifierTimeInDaylight",
 }
 
 TYPE_TO_SHORT_NAME = {
@@ -46,9 +48,10 @@ TYPE_TO_SHORT_NAME = {
     "HKQuantityTypeIdentifierBodyMass": "body_mass",
     "HKQuantityTypeIdentifierRespiratoryRate": "respiratory_rate",
     "HKQuantityTypeIdentifierOxygenSaturation": "oxygen_saturation",
+    "HKQuantityTypeIdentifierTimeInDaylight": "time_in_daylight_minutes",
 }
 
-SUM_TYPES = {"steps", "exercise_minutes", "stand_minutes", "walking_running_distance", "flights_climbed", "active_energy", "basal_energy"}
+SUM_TYPES = {"steps", "exercise_minutes", "stand_minutes", "walking_running_distance", "flights_climbed", "active_energy", "basal_energy", "time_in_daylight_minutes"}
 MEAN_TYPES = {"heart_rate", "resting_heart_rate", "hrv_sdnn", "body_mass", "respiratory_rate", "oxygen_saturation"}
 
 
@@ -99,12 +102,27 @@ def import_apple_health_zip(zip_path: Path = APPLE_HEALTH_RAW, output_dir: Path 
     save_csv(workouts_df, output_dir / "apple_health_workouts.csv")
     save_csv(summaries_df, output_dir / "apple_health_activity_summary.csv")
 
+    records_by_type = (
+        records_df["type_short"].value_counts(dropna=False).to_dict()
+        if not records_df.empty and "type_short" in records_df.columns
+        else {}
+    )
+    daylight = records_df[records_df.get("type_short", pd.Series(dtype="object")) == "time_in_daylight_minutes"].copy() if not records_df.empty else pd.DataFrame()
+    daylight_sources = (
+        sorted(daylight["sourceName"].dropna().astype(str).unique().tolist())
+        if not daylight.empty and "sourceName" in daylight.columns
+        else []
+    )
+
     save_json(
         {
             "records_selected_rows": len(records_df),
             "workout_rows": len(workouts_df),
             "activity_summary_rows": len(summaries_df),
             "selected_types": sorted(KEEP_TYPES),
+            "records_by_type": records_by_type,
+            "daylight_record_rows": int(len(daylight)),
+            "daylight_sources": daylight_sources,
         },
         output_dir / "apple_health_import_inventory.json",
     )
@@ -128,6 +146,13 @@ def _load_records(input_dir: Path = APPLE_IMPORTED_DIR) -> pd.DataFrame:
 
 
 def build_daily_activity(records_df: pd.DataFrame, output_dir: Path = APPLE_CLEAN_DIR) -> pd.DataFrame:
+    """Aggregate daily activity quantities.
+
+    Time in Daylight is exported by Apple Health as short minute-valued Watch
+    records. Because the user's export has a single source (Apple Watch), these
+    values can be summed directly by local calendar date without de-duplication.
+    Missing daylight rows remain NULL rather than being interpreted as zero.
+    """
     if records_df.empty:
         out = pd.DataFrame(columns=["date"])
     else:
@@ -194,6 +219,9 @@ def build_daily_sleep(records_df: pd.DataFrame, output_dir: Path = APPLE_CLEAN_D
 
     df["duration_hours"] = (df["endDate"] - df["startDate"]).dt.total_seconds() / 3600
     df = df[df["duration_hours"].notna() & (df["duration_hours"] > 0)].copy()
+    # Attribute overnight sleep to the day it ended (wake date), so the
+    # relationship is naturally "last night's sleep -> today's mood".
+    df["date"] = pd.to_datetime(df["endDate"], errors="coerce").dt.normalize()
     if df.empty:
         out = pd.DataFrame(columns=empty_cols)
         save_csv(out, output_dir / "apple_daily_sleep.csv")
